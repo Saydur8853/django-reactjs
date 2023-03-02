@@ -1,0 +1,183 @@
+{% extends 'backend/base.html' %}
+
+{% block title %} Product List {% endblock %}
+
+{% block content %}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Products</h1>
+</div>
+
+
+<div class="card">
+
+    <form action="" method="get" class="card-header">
+
+        <div class="form-row justify-content-between">
+
+            <div class="col-md-2">
+                <input type="text" name="title" placeholder="Product Title" class="form-control"
+                    value="{{ request.GET.title }}">
+            </div>
+
+            <div class="col-md-2">
+
+                <select name="variant" id="" class="form-control">
+                    <option selected disabled>--Select A Variant--</option>
+
+                    {% for variant in variants%}
+                    {% for productvariants in product_variant%}
+                    <option value="{{ productvariants.variant_title }}">{{variants.variant }} {{variant.title }}
+                    </option>
+                    {% endfor %}
+                    {% endfor %}
+
+
+                </select>
+
+            </div>
+
+            <div class="col-md-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Price Range</span>
+                    </div>
+                    <input type="text" name="price_from" aria-label="First name" placeholder="From" class="form-control"
+                        value="{{ request.GET.price_from }}">
+                    <input type="text" name="price_to" aria-label="Last name" placeholder="To" class="form-control"
+                        value="{{ request.GET.price_to }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="date" placeholder="Date" class="form-control" value="{{ request.GET.date }}">
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
+            </div>
+
+        </div>
+
+    </form>
+
+
+    <div class="card-body">
+        <div class="table-response">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Variant</th>
+                        <th width="150px">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for product in products %}
+                    <!-- <p>{{ product.id }}</p> -->
+
+                    <tr>
+                        <td>{{product.id}}</td>
+                        <td>{{product.title }} <br> Created at : {{product.created_at}}</td>
+                        <td>{{product.description}}</td>
+                        <td>
+
+                            <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
+
+
+                                {% for variant in product.prices.all%}
+                                <dt class="col-sm-3 pb-0">
+
+                                    {{variant.product_variant_one.variant_title}} /
+                                    {{variant.product_variant_two.variant_title}} /
+                                    {{variant.product_variant_three.variant_title}}
+
+                                </dt>
+
+
+                                <dd class="col-sm-9">
+
+                                    <dl class="row mb-0">
+                                        <dd class="col-sm-4 pb-0">price : {{variant.price}}</dd>
+                                        <dd class="col-sm-8 pb-0">InStock : {{variant.stock}}</dd>
+                                    </dl>
+
+                                </dd>
+                                {% endfor %}
+
+                            </dl>
+                            <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
+                            </button>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="" class="btn btn-success">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+    <!-- <div class="card-footer">
+        <div class="row justify-content-between">
+            <div class="col-md-6">
+                <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} out of {{ paginator.count }}</p>
+                {% if is_paginated %}
+                {% if page_obj.has_previous %}
+                <a href="?page=1" class="btn btn-outline-primary mb-4">Fast</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary mb-4">Previous</a>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <a href="?page={{ num }}" class="btn btn-primary mb-4">{{ num }}</a>
+                {% elif num > page_obj.number|add:'-4' and num < page_obj.number|add:'4' %} <a href="?page={{ num }}"
+                    class="btn btn-outline-primary mb-4">{{ num }}</a>
+                    {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary mb-4">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary mb-4">Last</a>
+                    {% endif %}
+                    {% endif %}
+            </div>
+            <div class="col-md-2">
+
+            </div>
+        </div>
+    </div> -->
+    <div class="card-footer">
+        <div class="row justify-content-between">
+            <div class="col-md-6">
+                <p>Showing {{ products.start_index }} to {{ products.end_index }} out of {{ products.paginator.count }}
+                </p>
+                {% if products.has_other_pages %}
+                {% if products.has_previous %}
+                <a href="?page=1" class="btn btn-outline-primary mb-4">Fast</a>
+                <a href="?page={{ products.previous_page_number }}" class="btn btn-outline-primary mb-4">Previous</a>
+                {% endif %}
+                {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                <a href="?page={{ num }}" class="btn btn-primary mb-4">{{ num }}</a>
+                {% elif num > products.number|add:'-4' and num < products.number|add:'4' %} <a href="?page={{ num }}"
+                    class="btn btn-outline-primary mb-4">{{ num }}</a>
+                    {% endif %}
+                    {% endfor %}
+                    {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}" class="btn btn-outline-primary mb-4">Next</a>
+                    <a href="?page={{ products.paginator.num_pages }}" class="btn btn-outline-primary mb-4">Last</a>
+                    {% endif %}
+                    {% endif %}
+            </div>
+            <div class="col-md-2">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
